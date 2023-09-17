@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CLOCK_DRIFT_ENTROPY_SIZE","SUBSECONDS_TO_COUNT"],"struct":["ClockDrift"]};

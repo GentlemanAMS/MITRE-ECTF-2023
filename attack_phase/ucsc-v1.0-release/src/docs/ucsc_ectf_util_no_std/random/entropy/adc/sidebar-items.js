@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DELAY","SAMPLE_SIZE"],"struct":["Adc"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["RECV_BUFF_LEN"],"fn":["get_package","main","send_package"],"struct":["Args"]};

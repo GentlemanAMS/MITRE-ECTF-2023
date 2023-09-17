@@ -1,0 +1,77 @@
+[env]
+BUILD_TYPE="release"
+
+[tasks.buildall]
+dependencies = [
+  "car",
+  "paired_fob",
+  "unpaired_fob"
+]
+
+[tasks.car]
+dependencies = ["car_elf", "car_bin", "car_eeprom"]
+
+[tasks.car_bin]
+dependencies = ["car_elf"]
+script = [
+  "arm-none-eabi-objcopy -O binary ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/car ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/car.bin --strip-unneeded",
+  "cp ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/car.bin ../bin/car.bin"
+]
+
+[tasks.car_elf_build]
+command = "cargo"
+args = ["build", "--bin", "car", "--target", "thumbv7em-none-eabihf", "-v", "--profile", "@@decode(BUILD_TYPE,release,release,debug,dev)"]
+
+[tasks.car_elf_copy]
+command = "cp"
+args = ["./target/thumbv7em-none-eabihf/${BUILD_TYPE}/car", "../bin/car.elf"]
+
+[tasks.car_elf]
+run_task = { name = ["car_elf_build", "car_elf_copy"] }
+
+[tasks.paired_fob]
+dependencies = ["fob_elf", "fob_bin", "paired_fob_eeprom"]
+
+[tasks.unpaired_fob]
+dependencies = ["fob_elf", "fob_bin", "unpaired_fob_eeprom"]
+
+[tasks.fob_bin]
+dependencies = ["fob_elf"]
+script = [
+  "arm-none-eabi-objcopy -O binary ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/fob ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/fob.bin --strip-unneeded",
+  "cp ./target/thumbv7em-none-eabihf/${BUILD_TYPE}/fob.bin ../bin/fob.bin"
+]
+
+[tasks.fob_elf_build]
+command = "cargo"
+args = ["build", "--bin", "fob", "--target", "thumbv7em-none-eabihf", "-v", "--profile", "@@decode(BUILD_TYPE,release,release,debug,dev)"]
+
+[tasks.fob_elf_copy]
+command = "cp"
+args = ["./target/thumbv7em-none-eabihf/${BUILD_TYPE}/fob", "../bin/fob.elf"]
+
+[tasks.fob_elf]
+run_task = { name = ["fob_elf_build", "fob_elf_copy"] }
+
+[tasks.paired_fob_eeprom]
+script = [
+  "python3 make_eeprom.py --type fob --secret-file ${SECRETS_DIR}/secrets.json --eeprom-file ../bin/paired_fob.eeprom --car-id ${CAR_ID} --pair-pin ${PAIR_PIN} --paired"
+]
+
+[tasks.unpaired_fob_eeprom]
+script = [
+  "python3 make_eeprom.py --type fob --secret-file ${SECRETS_DIR}/secrets.json --eeprom-file ../bin/unpaired_fob.eeprom"
+]
+
+[tasks.car_eeprom]
+script = [
+  "python3 make_eeprom.py --type car --secret-file ${SECRETS_DIR}/secrets.json --eeprom-file ../bin/car.eeprom --car-id ${CAR_ID}"
+]
+
+[tasks.cleanbin]
+script = [
+  "rm -rf ../bin && mkdir ../bin"
+]
+
+[tasks.all]
+dependencies = ["cleanbin", "buildall"]

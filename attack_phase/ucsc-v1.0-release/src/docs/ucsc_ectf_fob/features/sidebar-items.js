@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_installed_feature","paired_process_msg","send_ack"]};

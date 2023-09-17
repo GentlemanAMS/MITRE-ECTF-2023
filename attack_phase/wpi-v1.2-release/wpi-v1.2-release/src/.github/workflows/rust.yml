@@ -1,0 +1,42 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      CAR_ID: 1
+      PAIR_PIN: 123456
+      SECRETS_DIR: ./secrets
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Install Dependencies
+      run: |
+        sudo apt-get install -y make python3 clang binutils-arm-none-eabi gcc-arm-none-eabi llvm clang libc6-dev-i386
+        cargo install cargo-make
+        rustup target add thumbv7em-none-eabihf
+        mkdir bin
+        mkdir secrets
+        python3 -m pip install pynacl pycryptodome
+        python3 ../deployment/generate_secrets.py --secret-file "${SECRETS_DIR}/secrets.json"
+    - name: Build
+      run: cargo make all --verbose
+    - name: Run tests
+      run: cargo test --verbose
+      
+defaults:
+  run:
+    working-directory: embed

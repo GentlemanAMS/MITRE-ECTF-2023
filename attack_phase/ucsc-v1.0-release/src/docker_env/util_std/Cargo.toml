@@ -1,0 +1,10 @@
+[package]
+name = "ucsc-ectf-util-std"
+version = "0.1.0"
+edition = "2021"
+authors = ["2023 UCSC eCTF Team"]
+license = "MIT"
+
+[dependencies]
+ucsc-ectf-util-common = { path = "../util_common" }
+rand = "0.8.5"

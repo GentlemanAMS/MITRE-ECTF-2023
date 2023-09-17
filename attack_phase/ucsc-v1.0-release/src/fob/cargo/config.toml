@@ -1,0 +1,11 @@
+[build]
+target = "thumbv7em-none-eabihf"
+
+[net]
+git-fetch-with-cli = true
+
+[target.thumbv7em-none-eabihf]
+runner = 'arm-none-eabi-gdb'
+rustflags = [
+    "-C", "link-arg=-Tlink.x",
+]

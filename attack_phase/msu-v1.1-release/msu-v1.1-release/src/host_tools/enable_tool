@@ -1,0 +1,59 @@
+#!/usr/bin/python3 -u
+
+# @file enable_tool
+# @author Spartan State Security Team
+# @brief host tool for enabling a feature on a fob
+# @date 2023
+#
+#  This source file is part of our designed system
+#  for MITRE's 2023 Embedded System CTF (eCTF).
+
+import socket
+import argparse
+import time
+import sys
+
+# @brief Function to send commands to enable a feature on a fob
+# @param fob_bridge, bridged serial connection to fob
+# @param package_name, name of the package file to read from
+def enable(fob_bridge, package_name):
+
+    # Connect fob socket to serial
+    fob_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    fob_sock.connect(("ectf-net", int(fob_bridge)))
+
+    # Open and read binary data from package file
+    with open(f"/package_dir/{package_name}", "rb") as fhandle:
+        message = fhandle.read()
+
+    # Send enable command to fob
+    fob_sock.send(b"\x10")
+
+    # Send package to fob
+    fob_sock.send(message)
+
+    time.sleep(0.2)
+
+    return 0
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--fob-bridge", help="Bridge for the fob", type=int, required=True,
+    )
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+
+    args = parser.parse_args()
+
+    enable(args.fob_bridge, args.package_name)
+
+
+if __name__ == "__main__":
+    main()

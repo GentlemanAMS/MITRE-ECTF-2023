@@ -1,0 +1,25 @@
+[package]
+name = "riir_host_tools"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "unlock_tool"
+
+[[bin]]
+name = "enable_tool"
+
+[[bin]]
+name = "pair_tool"
+
+[[bin]]
+name = "package_tool"
+
+[dependencies]
+blake2 = "0.10.4"
+clap = { version = "3.0.14", features = ["derive"] }
+color-eyre = "0.6.0"
+p256 = { version = "0.10.1", default-features = false, features = ["ecdsa", "sha256"] }
+
+

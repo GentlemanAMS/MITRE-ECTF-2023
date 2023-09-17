@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "gpio.h": "c",
+        "sb_sha256.h": "c",
+        "sb_all.h": "c",
+        "sysctl.h": "c"
+    },
+    "cortex-debug.variableUseNaturalFormat": false,
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

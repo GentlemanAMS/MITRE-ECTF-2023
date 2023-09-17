@@ -1,0 +1,11 @@
+[package]
+name = "ucsc-ectf-enable-feature"
+version = "0.1.0"
+edition = "2021"
+authors = ["2023 UCSC eCTF Team"]
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.1.8", features = ["derive"] }
+postcard = { version = "1.0.4", features = ["use-std"], default-features = false }
+ucsc-ectf-util-std = { path = "../../docker_env/util_std" }

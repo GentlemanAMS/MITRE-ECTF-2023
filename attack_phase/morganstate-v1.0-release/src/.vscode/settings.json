@@ -1,0 +1,11 @@
+{
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "feature_list.h": "c",
+        "rom.h": "c",
+        "hw_nvic.h": "c",
+        "stdbool.h": "c",
+        "unistd.h": "c",
+        "flash.h": "c"
+    }
+}

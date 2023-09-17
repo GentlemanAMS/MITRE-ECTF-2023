@@ -1,0 +1,42 @@
+[package]
+name = "ectf-2023-umass-rustlib"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+std = []
+default = []
+
+[lib]
+crate-type = ["lib", "staticlib"]
+
+[profile.release]
+# Keep debug info in the generated lib-gets discarded in linking anyway
+debug = true
+# Resulting assembly is more readable with opt-level=s, temporary
+opt-level = "s"
+# Optimize across all code: code is small enough to lead to only benefits
+codegen-units = 1
+
+[profile.release.package."*"]
+opt-level = 3
+
+[dependencies]
+heapless = "0.7.16"
+hmac = { version = "0.12", default-features = false }
+sha2 = { version = "0.10", default-features = false }
+# subtle 2.5 conflicts with other packages
+subtle = { version = ">=2.4.1,<2.5", default-features = false }
+argon2 = { version = "0.5.0", default-features = false, features = ["zeroize"]}
+p256 = { version = "0.13.0", default-features = false, features = ["ecdsa"] }
+
+rand_core = { version = "0.6.4", default-features = false }
+rand_chacha = { version = "0.3.1", default-features = false }
+
+bytemuck = { version="1.13" }
+
+# Use whatever version of zeroize got pulled in by argon2
+zeroize = { version = "*", default-features = false}
+
+[dev-dependencies]
+rand = { version = "*" }

@@ -1,0 +1,32 @@
+[package]
+name = "ucsc-ectf-car"
+version = "0.1.0"
+edition = "2021"
+authors = ["2023 UCSC eCTF Team"]
+categories = ["embedded", "no-std"]
+license = "MIT"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+
+[dependencies]
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = { version = "0.7.3", features = ["set-sp", "set-vtor"] }
+panic-halt = "0.2.0"
+postcard = { version = "1.0.4", default-features = false }
+tm4c123x-hal = { version = "0.10.2", features = ["rt"] }
+ucsc-ectf-util-no-std = { path = "../docker_env/util_no_std" }
+zeroize = { version = "1.5.7", default-features = false }
+
+[build-dependencies]
+k256 = { version = "0.12.0", features = ["ecdsa-core", "pem"] }
+ucsc-ectf-eeprom-layout = { path = "../docker_env/eeprom_layout" }
+
+# Make sure tm4c123x and tm4c123x-hal use the latest cortex-m and cortex-m-rt crates to fix UB.
+
+[patch.crates-io]
+tm4c123x = { git = "https://git.ucsc.edu/ucsc-ectf-2023/dslite2svd.git", branch = "v0.9.0-update" }
+tm4c123x-hal = { git = "https://git.ucsc.edu/ucsc-ectf-2023/tm4c-hal.git", branch = "tm4c123x-hal-0.10.2-update" }

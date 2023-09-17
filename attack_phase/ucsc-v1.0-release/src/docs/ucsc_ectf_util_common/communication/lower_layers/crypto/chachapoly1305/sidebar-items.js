@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["METADATA_SIZE","NONCE_SIZE","TAG_SIZE"],"struct":["XChacha20Poly1305RxChannel","XChacha20Poly1305TxChannel"],"type":["ChannelAlgorithm","Key","NonceSize","TagSize"]};

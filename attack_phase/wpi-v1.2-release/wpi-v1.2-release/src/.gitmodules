@@ -1,0 +1,10 @@
+[submodule "fob/lib/tiny-AES-c"]
+	path = fob/lib/tiny-AES-c
+	url = git@github.com:kokke/tiny-AES-c.git
+[submodule "car/lib/tiny-AES-c"]
+	path = car/lib/tiny-AES-c
+	url = git@github.com:kokke/tiny-AES-c.git
+[submodule "embed/deps/x25519-dalek"]
+	path = embed/deps/x25519-dalek
+	url = https://github.com/pinkforest/x25519-dalek.git
+	branch = fix-no_std

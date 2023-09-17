@@ -1,0 +1,37 @@
+
+python3 -m venv env
+source env/bin/activate
+python3 -m pip install --upgrade pip
+
+sudo chmod 666 /var/run/docker.sock 
+
+git clone git@github.com:mitre-cyber-academy/2023-ectf-tools.git
+python3 -m pip install -e 2023-ectf-tools
+
+python3 -m ectf_tools build.env --design src --name attack_phase
+python3 -m ectf_tools build.tools --design src --name attack_phase
+
+
+//For Car
+python3 -m ectf_tools device.load_sec_hw --dev-in firmware/<BINARY_FOLDER> --dev-name <BINARY_NAME> --dev-serial /dev/ttyACM0
+
+//For Fob
+python3 -m ectf_tools device.load_sec_hw --dev-in firmware/<BINARY_FOLDER> --dev-name <BINARY_NAME> --dev-serial /dev/ttyACM1
+
+//For Unpaired Fob
+python3 -m ectf_tools device.load_sec_hw --dev-in firmware/<BINARY_FOLDER> --dev-name <BINARY_NAME> --dev-serial /dev/ttyACM0
+
+
+//For Car
+python3 -m ectf_tools device.bridge --bridge-id 1339 --dev-serial /dev/ttyACM0
+
+//For Paired fob
+python3 -m ectf_tools device.bridge --bridge-id 1340 --dev-serial /dev/ttyACM1
+
+//For Unpaired fob
+python3 -m ectf_tools device.bridge --bridge-id 1339 --dev-serial /dev/ttyACM0
+
+
+python3 -m ectf_tools run.unlock --name attack_phase --car-bridge 1339
+python3 -m ectf_tools run.pair --name attack_phase --unpaired-fob-bridge 1339 --paired-fob-bridge 1340 --pair-pin <PAIR_PIN>
+python3 -m ectf_tools run.enable --name attack_phase --fob-bridge 1340 --package_in <PACKAGE_IN> --package_name <PACKAGE_NAME>

@@ -1,0 +1,64 @@
+#!/usr/bin/python3 -u
+
+# @file unlock_tool
+# @author Purdue eCTF Team
+# @brief host tool for unlocking a car
+# @date 2023
+#
+# This file contains the host tool for unlocking a car
+#
+# @copyright Copyright (c) 2023 Purdue eCTF Team
+
+from message import Message, get_message
+import argparse
+import socket
+import sys
+
+sys.path.append("./")
+
+
+def unlock(car_bridge):
+    # Connect car socket to serial
+    car_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    car_sock.connect(("ectf-net", int(car_bridge)))
+
+    # Set timeout for if unlock fails
+    car_sock.settimeout(2)
+
+    # Try to receive data while unlocking - if empty, unlock failed
+    unlocked = False
+    while True:
+        try:
+            message = get_message(car_sock)
+            if message is not None:
+                message.print()
+                if message.header == Message.START_HDR:
+                    unlocked = True
+        except socket.timeout:
+            break
+
+    if unlocked:
+        print("Unlock successful!")
+    else:
+        print("Unlock failed")
+
+    return 0
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to unlock
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--car-bridge", help="Port number of the socket for the car", required=True,
+    )
+
+    args = parser.parse_args()
+
+    unlock(args.car_bridge)
+
+
+if __name__ == "__main__":
+    main()

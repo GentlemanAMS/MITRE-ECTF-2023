@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_MESSAGE_SIZE","MS_TO_WAIT_FOR_MSG","UNPAIRED"],"fn":["__cortex_m_rt_main"],"mod":["features","pairing","unlock"]};

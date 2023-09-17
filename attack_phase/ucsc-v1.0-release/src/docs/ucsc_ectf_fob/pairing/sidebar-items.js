@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["PAIRING_PIN_REAL_SIZE"],"fn":["check_pin_and_diffie_hellman","check_pin_attempt","paired_process_msg","send_ack","set_pairing_longer_cooldown_byte","spin_pin_cooldown_timer","unpaired_listen_and_pair"],"mod":["diffie_hellman","pairing_sequence"]};

@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"ucsc_ectf_util_no_std":[["impl <a class=\"trait\" href=\"ucsc_ectf_util_no_std/messages/heapless/pool/singleton/arc/trait.Pool.html\" title=\"trait ucsc_ectf_util_no_std::messages::heapless::pool::singleton::arc::Pool\">Pool</a> for <a class=\"struct\" href=\"ucsc_ectf_util_no_std/runtime/struct.HibPool.html\" title=\"struct ucsc_ectf_util_no_std::runtime::HibPool\">HibPool</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

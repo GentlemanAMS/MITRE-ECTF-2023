@@ -1,0 +1,17 @@
+[package]
+name = "ucsc-ectf-util-common"
+version = "0.1.0"
+edition = "2021"
+authors = ["2023 UCSC eCTF Team"]
+categories = ["embedded", "no-std"]
+license = "MIT"
+
+[dependencies]
+chacha20poly1305 = { version = "0.10.1", default-features = false, features = ["heapless"] }
+generic-array = { version = "0.14.6", features = ["serde"] }
+typenum = "1.16.0"
+hex = {version = "0.4.3", default-features = false }
+serde = { version = "1.0.155", default-features = false, features = ["derive"] }
+k256 = { version = "0.12.0", default-features = false, features = ["ecdsa"] }
+heapless = { version = "0.7.16", default-features = false, features = ["serde"] }
+zeroize = { version = "1.5.7", default-features = false, features = ["zeroize_derive"] }

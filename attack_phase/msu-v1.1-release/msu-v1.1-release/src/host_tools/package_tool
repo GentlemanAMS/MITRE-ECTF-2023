@@ -1,0 +1,97 @@
+#!/usr/bin/python3 -u
+
+# @file package_tool
+# @author Spartan State Security Team
+# @brief host tool for packaging a feature for a fob
+# @date 2023
+#
+#  This source file is part of our designed system
+#  for MITRE's 2023 Embedded System CTF (eCTF).
+
+import argparse
+import json
+from pathlib import Path
+from Crypto.Util.number import bytes_to_long, long_to_bytes
+import Crypto.PublicKey.ECC as ecc
+from Crypto.Signature import DSS
+from Crypto.Hash import SHA256
+
+ECC_PRIVSIZE = 32
+
+# @brief Function to create a new feature package
+# @param package_name, name of the file to output package data to
+# @param car_id, the id of the car the feature is being packaged for
+# @param feature_number, the feature number being packaged
+def package(package_name, car_id, feature_number):
+    # Load host pubkey
+    host_privkey_file = "/secrets/host_privkey.PEM"
+    
+    with open(host_privkey_file, "rb") as fp:
+        host_privkey_pem = fp.read()
+
+    host_privkey = ecc.import_key(host_privkey_pem)
+
+    # Load car pubkey
+    secrets_file = "/secrets/car_secrets.json"
+    if Path(secrets_file).is_file():
+        with open(secrets_file, "r") as fp:
+            secrets = json.load(fp)
+    else:
+        secrets = {}
+    
+    if car_id not in secrets:
+        raise Exception("Car data not found in secrets file")
+    
+    car_pubkey = ecc.import_key(secrets[car_id]["pubkey_pem"])
+
+    car_pubkey_bytes = long_to_bytes(car_pubkey._point.x, ECC_PRIVSIZE) + long_to_bytes(car_pubkey._point.y, ECC_PRIVSIZE)
+
+    feature_num_bytes = feature_number.to_bytes(1,'little')
+
+    # Create package to match defined structure on fob
+    package_message_bytes = (
+        car_pubkey_bytes
+        + feature_num_bytes
+    )
+
+    # Generate Signature
+    h = SHA256.new(package_message_bytes)
+    signer = DSS.new(host_privkey, 'fips-186-3')
+    signature = signer.sign(h)
+
+    # Form Package
+    package_signed_message_bytes = feature_num_bytes + signature
+
+    # Write data out to package file
+    with open(f"/package_dir/{package_name}", "wb") as fhandle:
+        fhandle.write(package_signed_message_bytes)
+
+    print("Feature packaged")
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+    parser.add_argument(
+        "--car-id", help="Car ID", type=str, required=True,
+    )
+    parser.add_argument(
+        "--feature-number",
+        help="Number of the feature to be packaged",
+        type=int,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    package(args.package_name, args.car_id, args.feature_number)
+
+
+if __name__ == "__main__":
+    main()

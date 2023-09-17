@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["ucsc_ectf_car","ucsc_ectf_eeprom_layout","ucsc_ectf_fob","ucsc_ectf_util_common","ucsc_ectf_util_no_std"];

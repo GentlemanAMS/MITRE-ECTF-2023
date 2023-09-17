@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"ucsc_ectf_util_no_std":[["impl&lt;'a&gt; <a class=\"trait\" href=\"ucsc_ectf_util_no_std/timer/trait.Timer.html\" title=\"trait ucsc_ectf_util_no_std::timer::Timer\">Timer</a> for <a class=\"struct\" href=\"ucsc_ectf_util_no_std/timer/struct.HibTimer.html\" title=\"struct ucsc_ectf_util_no_std::timer::HibTimer\">HibTimer</a>&lt;'a&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

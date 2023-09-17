@@ -1,0 +1,6 @@
+[submodule "car/lib/sweet-b"]
+	path = car/lib/sweet-b
+	url = https://github.com/westerndigitalcorporation/sweet-b
+[submodule "fob/lib/sweet-b"]
+	path = fob/lib/sweet-b
+	url = https://github.com/westerndigitalcorporation/sweet-b

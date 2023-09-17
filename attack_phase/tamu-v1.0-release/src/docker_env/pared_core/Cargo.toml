@@ -1,0 +1,26 @@
+[package]
+name = "pared_core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cortex-m = "0.6.0"
+tm4c123x-hal = { git = "https://github.com/nhwn/tm4c-hal.git" }
+nb = "1.0"
+blake2 = { version = "0.10.4", default-features = false }
+p256 = { version = "0.10.1", default-features = false, features = ["ecdsa", "sha256"] }
+rand_chacha = { version = "0.3.1", default-features = false }
+chacha20poly1305 = { version = "0.9.0", default-features = false }
+aead = "0.4.3"
+num_enum = { version = "0.5.7", default-features = false }
+eeprom_layout = { path = "../eeprom_layout" }
+static_assertions = "1.1.0"
+
+[profile.release]
+codegen-units = 1
+debug = true
+lto = true
+opt-level = "z"
+incremental = false

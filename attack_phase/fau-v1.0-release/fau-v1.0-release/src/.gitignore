@@ -1,0 +1,7 @@
+*out/
+.vscode
+*.bin
+*.eeprom
+*.elf
+*.img
+*.code-workspace

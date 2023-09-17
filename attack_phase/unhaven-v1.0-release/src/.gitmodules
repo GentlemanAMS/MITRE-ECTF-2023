@@ -1,0 +1,6 @@
+[submodule "fob/lib/micro-ecc"]
+	path = fob/lib/micro-ecc
+	url = https://github.com/kmackay/micro-ecc.git
+[submodule "car/lib/micro-ecc"]
+	path = car/lib/micro-ecc
+	url = https://github.com/kmackay/micro-ecc.git

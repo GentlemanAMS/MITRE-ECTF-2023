@@ -1,0 +1,80 @@
+#!/usr/bin/python3 -u
+
+# @file enable_tool
+# @author Frederich Stine
+# @brief host tool for enabling a feature on a fob
+# @date 2023
+#
+# This source file is part of an example system for MITRE's 2023 Embedded
+# CTF (eCTF). This code is being provided only for educational purposes for the
+# 2023 MITRE eCTF competition, and may not meet MITRE standards for quality.
+# Use this code at your own risk!
+#
+# @copyright Copyright (c) 2023 The MITRE Corporation
+
+import socket
+import argparse
+import util
+import struct
+
+from errors import translate_error
+
+# @brief Function to send commands to enable a feature on a fob
+# @param fob_bridge, bridged serial connection to fob
+# @param package_name, name of the package file to read from
+def enable(fob_bridge, package_name):
+    # Open and read binary data from package file
+    with open(f"/package_dir/{package_name}", "rb") as fhandle:
+        message = fhandle.read()
+    
+    nonce, packet = message[:24], message[24:]
+
+    # Connect fob socket to serial
+    fob_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    fob_sock.connect(("ectf-net", int(fob_bridge)))
+
+    # Set timeout for if enable fails
+    fob_sock.settimeout(5)
+
+    # Send enable command to fob
+    util.send(fob_sock, b"xE")
+
+    util.send(fob_sock, nonce)
+
+    # Send packet body
+    util.send(fob_sock, packet)
+
+    # Try to receive data - if failed, enabling failed
+    try:
+        enable_status_code, = struct.unpack('<I', util.recv(fob_sock, 4))
+
+        if enable_status_code != 0:
+            raise RuntimeError("Fob returned error: %s" % translate_error(enable_status_code))
+
+        print("Enabled feature successfully")
+    except socket.timeout:
+        raise RuntimeError("Failed to enable feature (timeout)")
+
+    return 0
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--fob-bridge", help="Bridge for the fob", type=int, required=True,
+    )
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+
+    args = parser.parse_args()
+
+    enable(args.fob_bridge, args.package_name)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BYTE_FIELD_SIZE","CAR_ID_SIZE","ERASE_KEY","MESSAGE_SIZE","PACKAGED_FEATURE_SIGNED_SIZE","PAIRING_PIN_SIZE","PUBLIC_KEY_SIZE","SECRET_SIZE","SIGNATURE_SIZE"],"enum":["EepromError","EepromReadOnlyField","EepromReadWriteField"],"struct":["EepromController"],"trait":["EepromReadField"]};

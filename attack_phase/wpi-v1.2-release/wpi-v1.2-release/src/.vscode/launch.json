@@ -1,0 +1,59 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug - Car",
+            "cwd": "${workspaceFolder}/embed",
+            "executable": "${workspaceRoot}/bin/car.elf",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "device": "TM4C123GH6PM",
+            "configFiles": [
+                "interface/ti-icdi.cfg",
+                "board/ti_ek-tm4c123gxl.cfg",
+                "${workspaceRoot}/embed/car.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/debug/TM4C123GH6PM.svd"
+        },
+        {
+            "name": "Cortex Debug - Paired Fob",
+            "cwd": "${workspaceFolder}/embed",
+            "executable": "${workspaceRoot}/bin/fob.elf",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "device": "TM4C123GH6PM",
+            "configFiles": [
+                "interface/ti-icdi.cfg",
+                "board/ti_ek-tm4c123gxl.cfg",
+                "${workspaceRoot}/embed/fob.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/debug/TM4C123GH6PM.svd"
+        },
+        {
+            "name": "Cortex Debug - Unpaired Fob (runs on car board)",
+            "cwd": "${workspaceFolder}/embed",
+            "executable": "${workspaceRoot}/bin/unpairedFob.elf",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
+            "armToolchainPath": "/usr/lib/arm-none-eabi/bin",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "device": "TM4C123GH6PM",
+            "configFiles": [
+                "interface/ti-icdi.cfg",
+                "board/ti_ek-tm4c123gxl.cfg",
+                "${workspaceRoot}/embed/car.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/debug/TM4C123GH6PM.svd"
+        }
+    ]
+}

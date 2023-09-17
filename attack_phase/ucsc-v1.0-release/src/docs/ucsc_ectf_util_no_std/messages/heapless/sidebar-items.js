@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Entry"],"macro":["arc_pool","pool"],"mod":["binary_heap","mpmc","pool","sorted_linked_list","spsc"],"struct":["Arc","BinaryHeap","Deque","HistoryBuffer","IndexMap","IndexSet","LinearMap","OccupiedEntry","OldestOrdered","String","VacantEntry","Vec"],"type":["FnvIndexMap","FnvIndexSet"]};

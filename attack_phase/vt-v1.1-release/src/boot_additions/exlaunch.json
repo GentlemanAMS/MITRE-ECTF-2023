@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceFolder}\\Secured",
+            "executable": "${workspaceFolder}\\4-ectf-env\\v1fobdir\\chevy3fob.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "serverpath":"${workspaceFolder}\\openocd-20230111\\OpenOCD-20230111-0.12.0\\bin\\openocd.exe",
+            "device": "TM4C123GH6PM",
+            "configFiles": [
+                "interface/ti-icdi.cfg",
+                "board/ti_ek-tm4c123gxl.cfg"
+            ],
+            "svdFile": "${workspaceRoot}\\Secured\\debug\\TM4C123GH6PM.svd",
+            "armToolchainPath": "${workspaceRoot}\\arm-gnu-toolchain-12.2.rel1-mingw-w64-i686-arm-none-eabi\\bin"
+        }
+    ]
+}

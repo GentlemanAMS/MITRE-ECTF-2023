@@ -1,0 +1,80 @@
+#!/usr/bin/python3 -u
+
+# @file package_tool
+# @author Frederich Stine
+# @brief host tool for packaging a feature for a fob
+# @date 2023
+#
+# This source file is part of an example system for MITRE's 2023 Embedded
+# CTF (eCTF). This code is being provided only for educational purposes for the
+# 2023 MITRE eCTF competition, and may not meet MITRE standards for quality.
+# Use this code at your own risk!
+#
+# @copyright Copyright (c) 2023 The MITRE Corporation
+
+import argparse
+
+from Cryptodome.PublicKey import ECC
+from Cryptodome.Signature import DSS
+from Cryptodome.Hash import SHA256
+
+
+# @brief Function to create a new feature package
+# @param package_name, name of the file to output package data to
+# @param car_id, the id of the car the feature is being packaged for
+# @param feature_number, the feature number being packaged
+def package(package_name: str, car_id: int, feature_number: int):
+
+    if feature_number not in [1,2,3]:
+        raise ValueError("Feature number must be between 1 and 3")
+
+    # Create package to match defined structure on fob
+    package_message_bytes = (
+        car_id.to_bytes(4, "little")
+        + feature_number.to_bytes(1, "little")
+    )
+
+    # Read pre-generated key
+    key_filename = "feature_sign"
+    with open(f"/secrets/{key_filename}.pem", "rb") as fkey:
+        key = ECC.import_key(fkey.read())
+    # Sign the message and combine into one message
+    signer = DSS.new(key, 'fips-186-3')
+    signature = signer.sign(SHA256.new(package_message_bytes))
+    # Signature size is always the same
+    send_bytes = signature + package_message_bytes
+
+    # Write data out to package file
+    # /package_dir/ is the mounted location inside the container - should not change
+    with open(f"/package_dir/{package_name}", "wb") as fhandle:
+        fhandle.write(send_bytes)
+
+    print("Feature packaged")
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+    parser.add_argument(
+        "--car-id", help="Car ID", type=int, required=True,
+    )
+    parser.add_argument(
+        "--feature-number",
+        help="Number of the feature to be packaged",
+        type=int,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    package(args.package_name, args.car_id, args.feature_number)
+
+
+if __name__ == "__main__":
+    main()

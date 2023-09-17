@@ -1,0 +1,33 @@
+#!/usr/bin/python3 -u
+
+# @file gen_package_key_tool
+# @author Dung Nguyen
+# @brief host tool for generating package private and public key for signing
+# @date 2023
+
+from os import environ
+
+from Cryptodome.PublicKey import ECC
+
+def gen_keypair():
+    key: ECC.EccKey = ECC.generate(curve="p256")
+    prikey = key.export_key(format="PEM")
+    key_filename = "feature_sign"
+    secrets_dir = environ["SECRETS_DIR"]
+    # Private key for package preparation
+    with open(f"{secrets_dir}/{key_filename}.pem", "w") as fd:
+        fd.write(prikey)
+    # Public key for package verification
+    with open(f"{secrets_dir}/{key_filename}.pub", "wb") as fd:
+        fd.write(key.public_key().export_key(format="SEC1"))
+
+def main():
+    try:
+        gen_keypair()
+        print("Successfully generated private key for package")
+    except:
+        print("Package key generation failed")
+        raise
+
+if __name__ == "__main__":
+    main()

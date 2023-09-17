@@ -1,0 +1,145 @@
+#!/usr/bin/python3 -u
+
+# @file pair_tool
+# @author Purdue eCTF Team
+# @brief host tool for pairing a new key fob
+# @date 2023
+#
+# This file contains the host tool for pairing a new key fob
+#
+# @copyright Copyright (c) 2023 Purdue eCTF Team
+
+from message import Message, get_message
+import socket
+import argparse
+import struct
+import threading
+import sys
+
+sys.path.append("./")
+
+# @brief Function to send commands to pair
+# a new fob.
+# @param unpairmed_fob_bridge, bridged serial connection to unpairmed fob
+# @param pairmed_fob_bridge, bridged serial connection to pairmed fob
+# @param pair_pin, pin used to pair a new fob
+
+
+def pair(unpaired_fob_bridge, paired_fob_bridge, pair_pin):
+    # Connect to both sockets for serial
+    unpaired_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    unpaired_sock.connect(("ectf-net", int(unpaired_fob_bridge)))
+
+    paired_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    paired_sock.connect(("ectf-net", int(paired_fob_bridge)))
+
+    # send pairing request to unpaired so that it's ready first
+    p_msg = Message(Message.HOST_PAIR_HDR, b'')
+    p_msg.send(unpaired_sock)
+
+    # send the other pairing request to paired
+    p_msg = Message(Message.HOST_PAIR_HDR, pair_pin.encode('utf-8'))
+    p_msg.send(paired_sock)
+
+    # receive an authenticated message from paired
+    paired_sock.settimeout(5)
+
+    enabled = 0
+    while True:
+        try:
+            message = get_message(paired_sock)
+            if message is not None:
+                message.print()
+                if message.header == Message.ACK_HDR:
+                    if message.data[0] == Message.ACK_SUCCESS:
+                        enabled = 1
+                        break
+                    elif message.data[0] == Message.ACK_FAILURE:
+                        enabled = 2
+                        break
+                    else:
+                        enabled = 3
+        except socket.timeout:
+            print("Timeout")
+            break
+
+    match enabled:
+        case 0:
+            print("Failed to pair fob: No response from paired fob")
+            sys.exit(-1)
+        case 1:
+            print("Pin accepted by paired fob")
+        case 2:
+            print("Incorrect pin/message format")
+            sys.exit(-1)
+        case 3:
+            print("Fob send invalid ACK")
+            sys.exit(-1)
+
+    # Receive pairing status from unpaired fob
+    unpaired_sock.settimeout(5)
+
+    # Try to receive data - if failed, pairing failed
+    enabled = 0
+    while True:
+        try:
+            message = get_message(unpaired_sock)
+            if message is not None:
+                message.print()
+                if message.header == Message.ACK_HDR:
+                    if message.data[0] == Message.ACK_SUCCESS:
+                        enabled = 1
+                        break
+                    elif message.data[0] == Message.ACK_FAILURE:
+                        enabled = 2
+                    else:
+                        enabled = 3
+        except socket.timeout:
+            print("Timeout")
+            break
+
+    match enabled:
+        case 0:
+            print("Failed to pair fob: No response from unpaired fob")
+            sys.exit(-1)
+        case 1:
+            print("Pairing completed successfully")
+        case 2:
+            print("Unpaired fob didn't get the pairing data or is already paired")
+            sys.exit(-1)
+        case 3:
+            print("Fob send invalid ACK")
+            sys.exit(-1)
+    return 0
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to pair
+# function.
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--unpaired-fob-bridge",
+        help="Bridge for the unpaired fob",
+        type=int,
+        required=True,
+    )
+    parser.add_argument(
+        "--paired-fob-bridge",
+        help="Bridge for the paired fob",
+        type=int,
+        required=True,
+    )
+    parser.add_argument(
+        "--pair-pin", help="Program PIN", type=str, required=True,
+    )
+
+    args = parser.parse_args()
+
+    pair(args.unpaired_fob_bridge, args.paired_fob_bridge, args.pair_pin)
+
+
+if __name__ == "__main__":
+    main()

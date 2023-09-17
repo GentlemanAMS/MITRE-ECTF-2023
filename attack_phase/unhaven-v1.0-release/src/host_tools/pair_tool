@@ -1,0 +1,108 @@
+#!/usr/bin/python3 -u
+import logging
+# @file pair_tool
+# @author Frederich Stine
+# @brief host tool for pairing a new key fob
+# @date 2023
+#
+# This source file is part of an example system for MITRE's 2023 Embedded
+# CTF (eCTF). This code is being provided only for educational purposes for the
+# 2023 MITRE eCTF competition, and may not meet MITRE standards for quality.
+# Use this code at your own risk!
+#
+# @copyright Copyright (c) 2023 The MITRE Corporation
+
+import socket
+import argparse
+import time
+import hashlib
+import common
+from cryptography.hazmat.primitives import hashes
+
+
+# @brief Function to send commands to pair
+# a new fob.
+# @param unpairmed_fob_bridge, bridged serial connection to unpairmed fob
+# @param pairmed_fob_bridge, bridged serial connection to pairmed fob
+# @param pair_pin, pin used to pair a new fob
+# @param socket_host, the socket host for the bridge
+def pair(unpaired_fob_bridge, paired_fob_bridge, pair_pin, socket_host):
+
+    # Connect to both sockets for serial
+    unpaired_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    unpaired_sock.connect((socket_host, int(unpaired_fob_bridge)))
+
+    paired_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    paired_sock.connect((socket_host, int(paired_fob_bridge)))
+
+    # TODO: Change for release
+    unpaired_sock.settimeout(60)
+    paired_sock.settimeout(60)
+
+    paired_d = common.FobConnection(paired_sock)
+    unpaired_d = common.FobConnection(unpaired_sock)
+
+    try:
+        paired_d.ecdh_exchange()
+    except common.ReadException:
+        print("Issue while doing ECDH exchange")
+        return
+    # todo: add try except around blocks below
+    # Send pair commands to both fobs
+    paired_d.send_packet(0x4D)
+    paired_d.wait_for_ack()
+
+    unpaired_d.ecdh_exchange()
+
+    pair_pin = hashlib.blake2s(pair_pin.encode('utf-8'), digest_size=16).digest()
+
+    unpaired_d.send_packet(0x50, pair_pin)
+    unpaired_d.wait_for_ack()
+
+    # Set timeout for device to do their thing
+    unpaired_sock.settimeout(5)
+    post_ack = unpaired_d.receive_frame()
+    if post_ack[0] != 0x48:
+        print("Did not successfully pair")
+        return
+
+    print("Paired successfully :)")
+
+    return 0
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to pair
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--unpaired-fob-bridge",
+        help="Bridge for the unpaired fob",
+        type=int,
+        required=True,
+    )
+    parser.add_argument(
+        "--paired-fob-bridge",
+        help="Bridge for the paired fob",
+        type=int,
+        required=True,
+    )
+    parser.add_argument(
+        "--pair-pin", help="Program PIN", type=str, required=True,
+    )
+
+    parser.add_argument(
+        "--socket-host", help="Program PIN", type=str, default="ectf-net",
+    )
+
+    logging.basicConfig(level=logging.INFO)
+
+    args = parser.parse_args()
+
+    pair(args.unpaired_fob_bridge, args.paired_fob_bridge, args.pair_pin, args.socket_host)
+
+
+if __name__ == "__main__":
+    main()

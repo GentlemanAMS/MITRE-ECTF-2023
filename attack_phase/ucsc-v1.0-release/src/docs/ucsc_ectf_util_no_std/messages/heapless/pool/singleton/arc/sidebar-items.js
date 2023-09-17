@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["arc_pool"],"struct":["Arc","ArcInner"],"trait":["Pool"]};

@@ -1,0 +1,46 @@
+[package]
+name = "ectf"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "car"
+path = "car/src/main.rs"
+bench = false
+test = false
+
+[[bin]]
+name = "fob"
+path = "fob/src/main.rs"
+bench = false
+test = false
+
+[build-dependencies]
+bindgen = "0.53.1"
+cc = "1.0"
+
+[dependencies]
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.2"
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+chacha20poly1305 = { version = "0.10.1", default_features = false, features = ["rand_core"]}
+rand_chacha = { path = "./deps/rand_chacha", default_features = false }
+x25519-dalek = { path = "./deps/x25519-dalek", default_features = false }
+subtle = { version = "=2.4", default_features = false }
+secrecy = { version = "0.8.0", default_features = false }
+ed25519-dalek = { version = "1.0.1", default_features = false, features = ["u64_backend"] }
+tm4c123x-hal = "0.10.2"
+cortex-m-systick-countdown = "0.1.0"
+pbkdf2 = "0.12.1"
+sha2 = { version = "0.10.6", default-features = false }
+
+[dev-dependencies]
+dudect-bencher = "0.5.0"
+
+[profile.dev]
+opt-level = "z"
+
+[profile.release]
+opt-level = "z"

@@ -1,0 +1,15 @@
+[workspace]
+members = [
+    "display_unlock_message",
+    "enable_feature",
+    "package_feature",
+    "pair_fob"
+]
+resolver = "2"
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+lto = true
+strip = true

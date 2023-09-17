@@ -1,0 +1,10 @@
+.vscode
+.DS_Store
+._*
+commands
+__pycache__
+
+*.bin
+*.eeprom
+*.elf
+*.img

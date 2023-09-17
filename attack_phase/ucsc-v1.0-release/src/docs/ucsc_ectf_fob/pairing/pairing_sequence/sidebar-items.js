@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ZEROED_SECRET","ZEROED_SIGNATURE"],"fn":["generate_and_send_challenge","generate_challenge_response_msg","recv_challenge_response","run_paired","run_unpaired","turn_unpaired_to_paired","unpaired_recv_verified_pairing_info"]};

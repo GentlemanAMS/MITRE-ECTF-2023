@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MIN_FRAMED_UART_MESSAGE","UART_FIFO_LEN"],"struct":["FramedUartRxChannel","FramedUartTxChannel"]};

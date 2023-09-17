@@ -1,0 +1,89 @@
+#!/usr/bin/python3 -u
+
+# @file enable_tool
+# @author Purdue eCTF Team
+# @brief host tool for enabling a feature on a fob
+# @date 2023
+#
+# This file contains the host tool for enabling a feature on a fob
+#
+# @copyright Copyright (c) 2023 Purdue eCTF Team
+
+from message import Message, get_message
+import argparse
+import socket
+import sys
+
+sys.path.append("./")
+
+
+# @brief Function to send commands to enable a feature on a fob
+# @param fob_bridge, bridged serial connection to fob
+# @param package_name, name of the package file to read from
+def enable(fob_bridge, package_name):
+    # Connect car socket to serial
+    fob_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    fob_sock.connect(("ectf-net", int(fob_bridge)))
+
+    # Set timeout for if unlock fails
+    # Open and read binary data from package file
+    with open(f"/package_dir/{package_name}", "rb") as fhandle:
+        message = fhandle.read()
+
+    # Send package to fob
+    en_msg = Message(Message.HOST_FEATURE_HDR, message)
+    en_msg.send(fob_sock)
+
+    fob_sock.settimeout(5)
+    # Try to receive data - if failed, enabling failed
+    enabled = 0
+    while True:
+        try:
+            message = get_message(fob_sock)
+            if message is not None:
+                message.print()
+                if message.header == Message.ACK_HDR:
+                    if message.data[0] == Message.ACK_SUCCESS:
+                        enabled = 1
+                        break
+                    elif message.data[0] == Message.ACK_FAILURE:
+                        enabled = 2
+                    else:
+                        enabled = 3
+        except socket.timeout:
+            print("Timeout")
+            break
+
+    print(enabled)
+    match enabled:
+        case 0:
+            print("Enabling failed - no ACK received")
+        case 1:
+            print("Enabling successful!")
+        case 2:
+            print("Enabling failed - ACK received but feature not enabled")
+        case 3:
+            print("Enabling failed - ACK received but invalid ACK code")
+    return 0
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--fob-bridge", help="Bridge for the fob", type=int, required=True,
+    )
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+
+    args = parser.parse_args()
+
+    enable(args.fob_bridge, args.package_name)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `docker_env/util_no_std/src/button.rs`."><title>button.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-1def573a4779b29b.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-d59023bfa12059d2.css"><link rel="stylesheet" disabled href="../../static.files/dark-1ca41bb1e10af075.css"><link rel="stylesheet" disabled href="../../static.files/ayu-18b4181a2f3fb862.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ucsc_ectf_util_no_std/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<a href="#2" id="2">2</a>
+<a href="#3" id="3">3</a>
+<a href="#4" id="4">4</a>
+<a href="#5" id="5">5</a>
+<a href="#6" id="6">6</a>
+<a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
+<a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+</pre><pre class="rust"><code><span class="doccomment">//! A button module containing an interface to use the onboard SW1 button.
+
+</span><span class="kw">use </span>core::sync::atomic::{AtomicBool, Ordering};
+<span class="kw">use </span>cortex_m::peripheral::NVIC;
+<span class="kw">use </span>tm4c123x_hal::{
+    bb,
+    gpio::{gpiof::PF4, Input, InterruptMode, PullUp},
+    interrupt,
+    tm4c123x::GPIO_PORTF,
+};
+
+<span class="doccomment">/// The pin number of PF4.
+</span><span class="kw">const </span>PF4_PIN_NUMBER: u8 = <span class="number">4</span>;
+
+<span class="doccomment">/// Whether the Sw1ButtonController is initialized.
+</span><span class="kw">static </span>SW1_BUTTON_CONTROLLER_INITIALIZED: AtomicBool = AtomicBool::new(<span class="bool-val">false</span>);
+
+<span class="doccomment">/// Whether the PF4 pin interrupt has been triggered.
+</span><span class="kw">static </span>PF4_ACTIVATED: AtomicBool = AtomicBool::new(<span class="bool-val">false</span>);
+
+<span class="attr">#[interrupt]
+</span><span class="kw">fn </span>GPIOF() {
+    cortex_m::interrupt::free(|<span class="kw">_</span>| {
+        <span class="comment">// Check that Sw1ButtonController is initialized to uphold the safety comment below.
+        </span><span class="kw">if </span>!SW1_BUTTON_CONTROLLER_INITIALIZED.load(Ordering::SeqCst) {
+            <span class="kw">return</span>;
+        }
+
+        <span class="comment">// SAFETY: This is safe because this is run in an interrupt-free context and this code is run
+        // only when there is an instance of Sw1ButtonController. Sw1ButtonController is created only
+        // by Runtime, which requires a mutable reference to RuntimePeripherals. RuntimePeripherals
+        // can only be created once because it takes ownership of Peripherals and CorePeripherals.
+        // RuntimePeripherals also splits GPIO_PORTF into individual pins, destroying GPIO_PORTF in
+        // the process, thus making any way of getting and dereferencing the GPIO port F register
+        // block unsafe from that point and on. This ensures that the definition of LLVM noalias is
+        // satisfied.
+        </span><span class="kw">let </span>gpio_portf = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>GPIO_PORTF::ptr() };
+
+        <span class="comment">// Check that the interrupt was actually triggered by PF4.
+        </span><span class="kw">if </span>!bb::read_bit(<span class="kw-2">&amp;</span>gpio_portf.mis, PF4_PIN_NUMBER) {
+            <span class="kw">return</span>;
+        }
+
+        PF4_ACTIVATED.store(<span class="bool-val">true</span>, Ordering::SeqCst);
+
+        <span class="comment">// SAFETY: This is safe because the pointer is guaranteed to be valid. The guarantees from
+        // the earlier safety comment apply here as well.
+        </span><span class="kw">unsafe </span>{ bb::change_bit(<span class="kw-2">&amp;</span>gpio_portf.icr, PF4_PIN_NUMBER, <span class="bool-val">true</span>) };
+    });
+}
+
+<span class="doccomment">/// A struct for the SW1 button controller. The button controller does not provide any debouncing.
+</span><span class="kw">pub struct </span>Sw1ButtonController&lt;<span class="lifetime">&#39;a</span>&gt; {
+    _pf4: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>PF4&lt;Input&lt;PullUp&gt;&gt;,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Sw1ButtonController&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="doccomment">/// Initializes the SW1 button controller.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(pf4: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>PF4&lt;Input&lt;PullUp&gt;&gt;, nvic: <span class="kw-2">&amp;mut </span>NVIC) -&gt; <span class="self">Self </span>{
+        <span class="kw">const </span>NVIC_GPIOF_ISER_BYTE: usize = <span class="number">0</span>; <span class="comment">// Interrupt number 30 is in byte 0.
+        </span><span class="kw">const </span>NVIC_GPIOF_ISER_BIT: u32 = <span class="number">30</span>; <span class="comment">// Interrupt number 30.
+        </span>SW1_BUTTON_CONTROLLER_INITIALIZED.store(<span class="bool-val">true</span>, Ordering::SeqCst);
+        pf4.set_interrupt_mode(InterruptMode::EdgeRising);
+
+        <span class="comment">// SAFETY: Unmasking the interrupt is safe because the interrupt handler for GPIOF defined
+        // in this file only relies on data local to this module, and GPIO_PORTF. The safety of using
+        // GPIO_PORTF is explained in the safety comment of the GPIOF interrupt handler. Since nothing
+        // in this module relies on a mask-based critical section, this write is safe.
+        </span><span class="kw">unsafe </span>{ nvic.iser[NVIC_GPIOF_ISER_BYTE].write(<span class="number">1 </span>&lt;&lt; NVIC_GPIOF_ISER_BIT) };
+
+        <span class="self">Self </span>{ _pf4: pf4 }
+    }
+
+    <span class="doccomment">/// Returns whether an activation has been occurred for the SW1 button. Will continue to return
+    /// true until the activation is cleared with `Sw1ButtonController::clear_activation()`.
+    </span><span class="kw">pub fn </span>poll_for_activation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        PF4_ACTIVATED.load(Ordering::SeqCst)
+    }
+
+    <span class="doccomment">/// Clears the activation boolean for the SW1 button.
+    </span><span class="kw">pub fn </span>clear_activation(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        PF4_ACTIVATED.store(<span class="bool-val">false</span>, Ordering::SeqCst);
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Drop <span class="kw">for </span>Sw1ButtonController&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        SW1_BUTTON_CONTROLLER_INITIALIZED.store(<span class="bool-val">false</span>, Ordering::SeqCst);
+    }
+}
+</code></pre></div>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="ucsc_ectf_util_no_std" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (9a7cc6c32 2023-02-16)" data-search-js="search-14421e1532aead08.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

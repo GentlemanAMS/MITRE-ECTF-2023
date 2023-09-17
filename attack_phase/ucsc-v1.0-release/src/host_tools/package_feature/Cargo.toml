@@ -1,0 +1,12 @@
+[package]
+name = "ucsc-ectf-package-feature"
+version = "0.1.0"
+edition = "2021"
+authors = ["2023 UCSC eCTF Team"]
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.1.8", features = ["derive"] }
+k256 = { version = "0.12.0", features = ["ecdsa-core", "pem"] }
+postcard = { version = "1.0.4", features = ["alloc"] }
+ucsc-ectf-util-std = { path = "../../docker_env/util_std" }

@@ -1,0 +1,109 @@
+#!/usr/bin/python3 -u
+
+# @file package_tool
+# @author Frederich Stine
+# @brief host tool for packaging a feature for a fob
+# @date 2023
+#
+# This source file is part of an example system for MITRE's 2023 Embedded
+# CTF (eCTF). This code is being provided only for educational purposes for the
+# 2023 MITRE eCTF competition, and may not meet MITRE standards for quality.
+# Use this code at your own risk!
+#
+# @copyright Copyright (c) 2023 The MITRE Corporation
+
+import argparse
+import json
+import random
+from Crypto.Random import get_random_bytes
+from Crypto.Hash import SHA256
+from Crypto.Cipher import AES
+
+
+# Generates a feature (if not a feature that releases a flag, does nothing)
+def gen_feature(car, feature_num):
+    key = bytes.fromhex(car['feature_key'])
+    seed = bytes.fromhex(car['feature_seed'])
+
+    # make sure that you can always calculate what a feature should be; aka seed the random
+    random.seed(seed)
+
+    # get the correct random value
+    for x in range(feature_num) - 1:
+        random.randbytes(30)
+
+    feat = car['id'].to_bytes(1, 'big') + feature_num.to_int(1, 'big') + random.randbytes(30)
+
+    cipher = AES.new(key, AES.MODE_ECB)
+
+    # encrypt each plaintext
+
+    pak = car['id'].to_bytes(1, 'big') + b'\x01' + cipher.encrypt(feat)
+
+    return pak
+
+
+# @brief Function to create a new feature package
+# @param package_name, name of the file to output package data to
+# @param car_id, the id of the car the feature is being packaged for
+# @param feature_number, the feature number being packaged
+def package(package_name, car_id, feature_number):
+
+    car_id = int(car_id) & 0xff
+    feature_number = (int(feature_number) & 0xff)
+
+    s = open('/secrets/car_secrets.json', "r")
+    factory_secrets = json.load(s)
+    car = factory_secrets[f'car{car_id}']
+
+    feature = b''
+
+    if feature_number <= 0:
+        raise Exception('Invalid Feature Number')
+        exit()
+        
+    elif feature_number == 1:
+        feature = bytes.fromhex(car['feat_a'])
+
+    elif feature_number == 2:
+        feature = bytes.fromhex(car['feat_b'])
+
+    elif feature_number == 3:
+        feature = bytes.fromhex(car['feat_c'])
+    
+    else:
+        feature = gen_feature(car, feature_number)
+
+    with open(f"/package_dir/{package_name}", "wb") as fhandle:
+        fhandle.write(feature)
+    
+    print("Feature packaged")
+
+   
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+    parser.add_argument(
+        "--car-id", help="Car ID", type=str, required=True,
+    )
+    parser.add_argument(
+        "--feature-number",
+        help="Number of the feature to be packaged",
+        type=int,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    package(args.package_name, args.car_id, args.feature_number)
+
+
+if __name__ == "__main__":
+    main()

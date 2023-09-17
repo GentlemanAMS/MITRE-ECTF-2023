@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_MESSAGE_SIZE"],"fn":["__cortex_m_rt_main"],"mod":["eeprom_messages","unlock"]};

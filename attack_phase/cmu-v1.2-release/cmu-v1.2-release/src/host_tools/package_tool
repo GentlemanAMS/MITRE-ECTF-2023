@@ -1,0 +1,71 @@
+#!/usr/bin/python3 -u
+
+# @file package_tool
+# @author Nandan Desai
+# @brief host tool for packaging a feature for a fob
+# @date 2023
+
+import argparse
+import monocypher
+import json
+import base64
+
+SECRETS_DIR = '/secrets'
+SECRETS_FILE = 'car_secrets.json'
+SECRETS_PATH = SECRETS_DIR + '/' + SECRETS_FILE
+
+# @brief Function to create a new feature package
+# @param package_name, name of the file to output package data to
+# @param car_id, the id of the car the feature is being packaged for
+# @param feature_number, the feature number being packaged
+def package(package_name, car_id, feature_number):
+    if car_id < 0 or car_id > 255 or feature_number < 0 or feature_number > 255:
+        raise Exception('Invalid input for Car ID or Feature Number.')
+    
+    car_bytes: bytes = car_id.to_bytes(4, 'little')
+    feature_bytes: bytes = feature_number.to_bytes(4, 'little')
+
+    message = car_bytes + feature_bytes
+
+    with open(SECRETS_PATH, "r") as fp:
+        secrets = json.load(fp)
+
+    depl_priv_key = base64.b64decode(secrets['EEPROM_DEPLOYMENT_SIGNATURE_PRIVATE_KEY'])
+
+    signature = monocypher.signature_sign(depl_priv_key, message)
+
+    package_message_bytes = message + signature
+    
+    # Write data out to package file
+    # /package_dir/ is the mounted location inside the container - should not change
+    with open(f"/package_dir/{package_name}", "wb") as fhandle:
+        fhandle.write(package_message_bytes)
+    print("Feature packaged")
+
+
+# @brief Main function
+#
+# Main function handles parsing arguments and passing them to program
+# function.
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--package-name", help="Name of the package file", type=str, required=True,
+    )
+    parser.add_argument(
+        "--car-id", help="Car ID", type=int, required=True,
+    )
+    parser.add_argument(
+        "--feature-number",
+        help="Number of the feature to be packaged",
+        type=int,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    package(args.package_name, args.car_id, args.feature_number)
+
+
+if __name__ == "__main__":
+    main()
